@@ -11,7 +11,7 @@
 #include <algorithm>
 #include "Actor.h"
 #include "SpriteComponent.h"
-#include "Ship.h"
+#include "Skeleton.h"
 #include "BGSpriteComponent.h"
 
 Game::Game()
@@ -88,21 +88,21 @@ void Game::ProcessInput()
 	}
 
 	// Process ship input
-	mShip->ProcessKeyboard(state);
+	mSkeleton->ProcessKeyboard(state);
 }
 
 void Game::UpdateGame()
 {
 	// Compute delta time
 	// Wait until 16ms has elapsed since last frame
-	while (!SDL_TICKS_PASSED(SDL_GetTicks(), mTicksCount + 16))
+	while (!SDL_TICKS_PASSED(SDL_GetTicks(), mTicksCount + 50))
 		;
 
 	float deltaTime = (SDL_GetTicks() - mTicksCount) / 1000.0f;
-	if (deltaTime > 0.05f)
+	/*if (deltaTime > 0.05f)
 	{
 		deltaTime = 0.05f;
-	}
+	}*/
 	mTicksCount = SDL_GetTicks();
 
 	// Update all actors
@@ -154,9 +154,9 @@ void Game::GenerateOutput()
 void Game::LoadData()
 {
 	// Create player's ship
-	mShip = new Ship(this);
-	mShip->SetPosition(Vector2(100.0f, 384.0f));
-	mShip->SetScale(1.5f);
+	mSkeleton = new Skeleton(this);
+	mSkeleton->SetPosition(Vector2(100.0f, 384.0f));
+	mSkeleton->SetScale(1.5f);
 
 	// Create actor for the background (this doesn't need a subclass)
 	Actor* temp = new Actor(this);
