@@ -8,6 +8,7 @@
 
 #pragma once
 #include "Component.h"
+#include "Math.h"
 
 class MoveComponent : public Component
 {
@@ -21,9 +22,25 @@ public:
 	float GetForwardSpeed() const { return mForwardSpeed; }
 	void SetAngularSpeed(float speed) { mAngularSpeed = speed; }
 	void SetForwardSpeed(float speed) { mForwardSpeed = speed; }
-private:
+
+	void SetMass(float mass) { mMass = mass; }
+	void AddForce(Vector2 force) { mForce += force; }
+
+	float GetMaxForward() const { return mMaxForwardSpeed; }
+	float GetMaxAngular() const { return mMaxAngularSpeed; }
+	void SetMaxForwardSpeed(float speed) { mMaxForwardSpeed = speed; }
+	void SetMaxAngularSpeed(float speed) { mMaxAngularSpeed = speed; }
+protected:
 	// Controls rotation (radians/second)
 	float mAngularSpeed;
 	// Controls forward movement (units/second)
 	float mForwardSpeed;
+
+	float mMass;
+	Vector2 mForce;
+	Vector2 mVelocity;
+
+	// The maximum forward/angular speeds
+	float mMaxForwardSpeed;
+	float mMaxAngularSpeed;
 };
