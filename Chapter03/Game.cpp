@@ -21,7 +21,7 @@ Game::Game()
 ,mIsRunning(true)
 ,mUpdatingActors(false)
 {
-	
+	;
 }
 
 bool Game::Initialize()
