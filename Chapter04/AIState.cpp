@@ -8,15 +8,18 @@
 
 #include "AIState.h"
 #include "AIComponent.h"
+#include "Actor.h"
 #include <SDL/SDL_log.h>
 
 void AIPatrol::Update(float deltaTime)
 {
 	SDL_Log("Updating %s state", GetName());
-	bool dead = true;
-	if (dead)
+
+	Actor* act = mOwner->GetActor();
+	float rad = act->GetRotation();
+	if (Math::Abs(Math::Abs(rad) - 3.14f) > 0.2f)
 	{
-		mOwner->ChangeState("Death");
+		act->SetRotation(rad + 0.2f);
 	}
 }
 

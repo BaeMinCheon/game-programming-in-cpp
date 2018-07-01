@@ -7,9 +7,12 @@
 // ----------------------------------------------------------------
 
 #pragma once
-#include "Component.h"
+
 #include <unordered_map>
 #include <string>
+
+#include "Component.h"
+#include "AIState.h"
 
 class AIComponent : public Component
 {
@@ -21,6 +24,9 @@ public:
 	
 	// Add a new state to the map
 	void RegisterState(class AIState* state);
+
+	Actor* GetActor() { return mOwner; }
+	std::string GetState() { return mCurrentState->GetName(); }
 private:
 	// Maps name of state to AIState instance
 	std::unordered_map<std::string, class AIState*> mStateMap;
