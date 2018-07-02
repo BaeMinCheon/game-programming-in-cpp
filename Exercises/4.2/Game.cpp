@@ -94,7 +94,13 @@ void Game::ProcessInput()
 							bool playerMoved = TryPlayerMove(&mBoardState, col);
 							if (playerMoved && !mBoardState.IsTerminal())
 							{
-								CPUMove(&mBoardState);
+								GTNode* root = new GTNode;
+								root->mState = mBoardState;
+								GenStates(root, false, 1);
+								mBoardState = AlphaBetaDecide(root, 1);
+								
+								root->mChildren.clear();
+								delete root;
 							}
 						}
 					}

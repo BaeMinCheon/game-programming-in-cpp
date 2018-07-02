@@ -41,6 +41,61 @@ std::vector<BoardState*> BoardState::GetPossibleMoves(SquareState player) const
 	return retVal;
 }
 
+std::vector<BoardState*> BoardState::GetPossibleMovesAll(SquareState player) const
+{
+	std::vector<BoardState*> retVal;
+
+	// For each column, find if a move is possible
+	for (int col = 0; col < 7; ++col)
+	{
+		if (mBoard[5][col] == BoardState::Empty)
+		{
+			retVal.emplace_back(new BoardState(*this));
+			retVal.back()->mBoard[5][col] = player;
+		}
+	}
+	for (int row = 4; row >= 0; --row)
+	{
+		for (int col = 0; col < 7; ++col)
+		{
+			if (mBoard[row + 1][col] != BoardState::Empty &&
+				mBoard[row][col] == BoardState::Empty)
+			{
+				retVal.emplace_back(new BoardState(*this));
+				retVal.back()->mBoard[row][col] = player;
+			}
+		}
+	}
+
+	return retVal;
+}
+
+std::vector<std::pair<int, int>> BoardState::GetPossiblePosAll() const
+{
+	std::vector<std::pair<int, int>> retVal;
+
+	for (int col = 0; col < 7; ++col)
+	{
+		if (mBoard[5][col] == BoardState::Empty)
+		{
+			retVal.emplace_back(std::make_pair(5, col));
+		}
+	}
+	for (int row = 4; row >= 0; --row)
+	{
+		for (int col = 0; col < 7; ++col)
+		{
+			if (mBoard[row + 1][col] != BoardState::Empty &&
+				mBoard[row][col] == BoardState::Empty)
+			{
+				retVal.emplace_back(std::make_pair(row, col));
+			}
+		}
+	}
+
+	return retVal;
+}
+
 bool BoardState::IsTerminal() const
 {
 	// Is the board full?
@@ -186,8 +241,61 @@ int BoardState::GetFourInARow() const
 
 float BoardState::CalculateHeuristic() const
 {
-	// TODO: You could change this to calculate an actual heuristic
-	return 0.0f;
+	float retVal = 0.0f;
+	std::vector<std::pair<int, int>> moves = this->GetPossiblePosAll();
+
+	for (std::pair<int, int> pos : moves)
+	{
+		// horizonal
+		if (pos.second > 0 &&
+			mBoard[pos.first][pos.second - 1] == BoardState::Yellow)
+		{
+			retVal += 0.1f;
+		}
+		if (pos.second < 6 &&
+			mBoard[pos.first][pos.second + 1] == BoardState::Yellow)
+		{
+			retVal += 0.1f;
+		}
+
+		// vertical
+		if (pos.first > 0 &&
+			mBoard[pos.first - 1][pos.second] == BoardState::Yellow)
+		{
+			retVal += 0.1f;
+		}
+		if (pos.first < 6 &&
+			mBoard[pos.first + 1][pos.second] == BoardState::Yellow)
+		{
+			retVal += 0.1f;
+		}
+
+		// diagonal : left top 2 right bottom
+		if (pos.first > 0 && pos.second > 0 &&
+			mBoard[pos.first - 1][pos.second - 1] == BoardState::Yellow)
+		{
+			retVal += 0.1f;
+		}
+		if (pos.first < 6 && pos.second < 6 &&
+			mBoard[pos.first + 1][pos.second + 1] == BoardState::Yellow)
+		{
+			retVal += 0.1f;
+		}
+
+		// diagonal : left bottom 2 right top
+		if (pos.first < 6 && pos.second > 0 &&
+			mBoard[pos.first + 1][pos.second - 1] == BoardState::Yellow)
+		{
+			retVal += 0.1f;
+		}
+		if (pos.first > 0 && pos.second < 6 &&
+			mBoard[pos.first - 1][pos.second + 1] == BoardState::Yellow)
+		{
+			retVal += 0.1f;
+		}
+	}
+
+	return retVal;
 }
 
 bool TryPlayerMove(BoardState* state, int column)
@@ -220,4 +328,85 @@ void CPUMove(BoardState* state)
 	{
 		delete state;
 	}
+}
+
+void GenStates(struct GTNode* root, bool isPlayer, int maxDepth)
+{
+	if (maxDepth <= 0)
+	{
+		return;
+	}
+
+	std::vector<BoardState*> moves =
+		root->mState.GetPossibleMovesAll(isPlayer ? BoardState::Yellow : BoardState::Red);
+
+	for (std::size_t i = 0; i < moves.size(); ++i)
+	{
+		GTNode* node = new GTNode;
+		root->mChildren.emplace_back(node);
+		node->mState = *moves[i];
+		GenStates(node, !isPlayer, maxDepth - 1);
+	}
+}
+
+BoardState AlphaBetaDecide(GTNode* node, int maxDepth)
+{
+	GTNode* choice = nullptr;
+	float alpha = -std::numeric_limits<float>::infinity();
+	float beta = +std::numeric_limits<float>::infinity();
+	for (auto child : node->mChildren)
+	{
+		float v = AlphaBetaMin(child, maxDepth - 1, alpha, beta);
+		if (v > alpha)
+		{
+			alpha = v;
+			choice = child;
+		}
+	}
+
+	return choice->mState;
+}
+
+float AlphaBetaMax(GTNode* node, int maxDepth, float alpha, float beta)
+{
+	if (maxDepth == 0 || node->mChildren.empty())
+	{
+		return node->mState.GetScore();
+	}
+
+	float maxValue = -std::numeric_limits<float>::infinity();
+
+	for (auto child : node->mChildren)
+	{
+		maxValue = std::max(maxValue, AlphaBetaMin(child, maxDepth - 1, alpha, beta));
+		if (maxValue >= beta)
+		{
+			return maxValue;
+		}
+		alpha = std::max(maxValue, alpha);
+	}
+	
+	return maxValue;
+}
+
+float AlphaBetaMin(GTNode* node, int maxDepth, float alpha, float beta)
+{
+	if (maxDepth == 0 || node->mChildren.empty())
+	{
+		return node->mState.GetScore();
+	}
+
+	float minValue = std::numeric_limits<float>::infinity();
+
+	for (auto child : node->mChildren)
+	{
+		minValue = std::max(minValue, AlphaBetaMin(child, maxDepth - 1, alpha, beta));
+		if (minValue <= beta)
+		{
+			return minValue;
+		}
+		alpha = std::max(minValue, alpha);
+	}
+
+	return minValue;
 }
