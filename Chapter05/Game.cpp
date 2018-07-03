@@ -25,7 +25,7 @@ Game::Game()
 ,mIsRunning(true)
 ,mUpdatingActors(false)
 {
-	
+	mBackColor[0] = mBackColor[1] = mBackColor[2] = 0.0f;
 }
 
 bool Game::Initialize()
@@ -174,12 +174,30 @@ void Game::UpdateGame()
 	{
 		delete actor;
 	}
+
+	mBackColor[0] += 0.001f;
+	if (mBackColor[0] >= 1.0f)
+	{
+		mBackColor[0] = 1.0f;
+		mBackColor[1] += 0.001f;
+		if (mBackColor[1] >= 1.0f)
+		{
+			mBackColor[1] = 1.0f;
+			mBackColor[2] += 0.001f;
+			if (mBackColor[2] >= 1.0f)
+			{
+				mBackColor[0] = 0.0f;
+				mBackColor[1] = 0.0f;
+				mBackColor[2] = 0.0f;
+			}
+		}
+	}
 }
 
 void Game::GenerateOutput()
 {
 	// Set the clear color to grey
-	glClearColor(0.86f, 0.86f, 0.86f, 1.0f);
+	glClearColor(mBackColor[0], mBackColor[1], mBackColor[2], 1.0f);
 	// Clear the color buffer
 	glClear(GL_COLOR_BUFFER_BIT);
 	
