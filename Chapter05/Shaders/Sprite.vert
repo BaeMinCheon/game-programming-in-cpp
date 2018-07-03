@@ -19,6 +19,8 @@ layout(location = 1) in vec2 inTexCoord;
 
 // Add texture coordinate as output
 out vec2 fragTexCoord;
+// vertex color
+out vec4 vertexColor;
 
 void main()
 {
@@ -30,4 +32,6 @@ void main()
 	// Transform
 	// Pass along the texture coordinate to frag shader
 	fragTexCoord = inTexCoord;
+	// vertex color assign
+	vertexColor = vec4(0.0, 0.0, 1.0, 0.0);
 }
