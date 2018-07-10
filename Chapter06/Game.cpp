@@ -195,6 +195,12 @@ void Game::LoadData()
 	dir.mDirection = Vector3(0.0f, -0.707f, -0.707f);
 	dir.mDiffuseColor = Vector3(0.78f, 0.88f, 1.0f);
 	dir.mSpecColor = Vector3(0.8f, 0.8f, 0.8f);
+	auto pt = mRenderer->GetPointLight();
+	pt[0].mPos = Vector3(200.0f, 0.0f, 0.0f);
+	pt[0].mDiffuseColor = Vector3(1.0f, 0.0f, 0.0f);
+	pt[0].mSpecColor = Vector3(1.0f, 1.0f, 1.0f);
+	pt[0].mSpecPower = 10.0f;
+	pt[0].mRadius = 100.0f;
 
 	// Camera actor
 	mCameraActor = new CameraActor(this);

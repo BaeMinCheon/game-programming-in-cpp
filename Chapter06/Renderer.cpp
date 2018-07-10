@@ -327,4 +327,19 @@ void Renderer::SetLightUniforms(Shader* shader)
 		mDirLight.mDiffuseColor);
 	shader->SetVectorUniform("uDirLight.mSpecColor",
 		mDirLight.mSpecColor);
+	// Point light
+	for (int i = 0; i < MAX_POINT_LIGHT; ++i)
+	{
+		char buffer[64] = {};
+		sprintf_s<64>(buffer, "uPtLight[%d].mPos", i);
+		shader->SetVectorUniform(buffer, mPtLight[i].mPos);
+		sprintf_s<64>(buffer, "uPtLight[%d].mDiffuseColor", i);
+		shader->SetVectorUniform(buffer, mPtLight[i].mDiffuseColor);
+		sprintf_s<64>(buffer, "uPtLight[%d].mSpecColor", i);
+		shader->SetVectorUniform(buffer, mPtLight[i].mSpecColor);
+		sprintf_s<64>(buffer, "uPtLight[%d].mSpecPower", i);
+		shader->SetFloatUniform(buffer, mPtLight[i].mSpecPower);
+		sprintf_s<64>(buffer, "uPtLight[%d].mRadius", i);
+		shader->SetFloatUniform(buffer, mPtLight[i].mRadius);
+	}
 }
