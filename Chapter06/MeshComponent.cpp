@@ -15,10 +15,10 @@
 #include "Texture.h"
 #include "VertexArray.h"
 
-MeshComponent::MeshComponent(Actor* owner)
-	:Component(owner)
-	,mMesh(nullptr)
-	,mTextureIndex(0)
+MeshComponent::MeshComponent(Actor* owner, Mesh* mesh)
+	: Component(owner),
+	mMesh(mesh),
+	mTextureIndex(0)
 {
 	mOwner->GetGame()->GetRenderer()->AddMeshComp(this);
 }
