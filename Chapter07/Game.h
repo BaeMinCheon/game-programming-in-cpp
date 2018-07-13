@@ -27,6 +27,7 @@ public:
 
 	class Renderer* GetRenderer() { return mRenderer; }
 	class AudioSystem* GetAudioSystem() { return mAudioSystem; }
+	class CameraActor* GetCameraActor() { return mCameraActor; }
 private:
 	void ProcessInput();
 	void HandleKeyPress(int key);

@@ -10,6 +10,7 @@
 #include "Actor.h"
 #include "Game.h"
 #include "AudioSystem.h"
+#include "CameraActor.h"
 
 AudioComponent::AudioComponent(Actor* owner, int updateOrder)
 	:Component(owner, updateOrder),
@@ -58,12 +59,18 @@ void AudioComponent::Update(float deltaTime)
 void AudioComponent::OnUpdateWorldTransform()
 {
 	// Update 3D events' world transforms
-	Matrix4 world = mOwner->GetWorldTransform();
+	auto cameraPos = mOwner->GetGame()->GetCameraActor()->GetCameraPosition();
+	auto playerPos = mOwner->GetGame()->GetCameraActor()->GetPlayerPosition();
+	auto virtualPos = (mOwner->GetPosition() - cameraPos) *
+		((mOwner->GetPosition() - playerPos).Length() / (mOwner->GetPosition() - cameraPos).Length());
+	Matrix4 world = Matrix4::CreateScale(mOwner->GetScale());
+	world *= Matrix4::CreateFromQuaternion(mOwner->GetRotation());
+	world *= Matrix4::CreateTranslation(virtualPos);
 	for (auto& event : mEvents3D)
 	{
 		if (event.IsValid())
 		{
-			event.Set3DAttributes(world, mOwner->GetForward());
+			event.Set3DAttributes(world, mOwner->GetForward() * mFowardSpeed);
 		}
 	}
 }
