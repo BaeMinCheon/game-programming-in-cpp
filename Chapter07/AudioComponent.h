@@ -23,7 +23,10 @@ public:
 
 	SoundEvent PlayEvent(const std::string& name);
 	void StopAllEvents();
+	
+	void SetForwardSpeed(float speed) { mFowardSpeed = speed; }
 private:
 	std::vector<SoundEvent> mEvents2D;
 	std::vector<SoundEvent> mEvents3D;
+	float mFowardSpeed;
 };

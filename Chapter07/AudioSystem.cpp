@@ -55,6 +55,9 @@ bool AudioSystem::Initialize()
 		return false;
 	}
 
+	// Doppler effect setting
+	mLowLevelSystem->set3DSettings(1.0f, 50.0f, 1.0f);
+
 	// Save the low-level system pointer
 	mSystem->getLowLevelSystem(&mLowLevelSystem);
 
@@ -278,7 +281,7 @@ namespace
 	}
 }
 
-void AudioSystem::SetListener(const Matrix4& viewMatrix)
+void AudioSystem::SetListener(const Matrix4& viewMatrix, const Vector3& velocity)
 {
 	// Invert the view matrix to get the correct vectors
 	Matrix4 invView = viewMatrix;
@@ -290,8 +293,8 @@ void AudioSystem::SetListener(const Matrix4& viewMatrix)
 	listener.forward = VecToFMOD(invView.GetZAxis());
 	// In the inverted view, second row is up
 	listener.up = VecToFMOD(invView.GetYAxis());
-	// Set velocity to zero (fix if using Doppler effect)
-	listener.velocity = {0.0f, 0.0f, 0.0f};
+	// Set velocity
+	listener.velocity = VecToFMOD(velocity);
 	// Send to FMOD
 	mSystem->setListenerAttributes(0, &listener);
 }

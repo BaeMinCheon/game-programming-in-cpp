@@ -12,7 +12,8 @@
 #include "AudioSystem.h"
 
 AudioComponent::AudioComponent(Actor* owner, int updateOrder)
-	:Component(owner, updateOrder)
+	:Component(owner, updateOrder),
+	mFowardSpeed(0.0f)
 {
 }
 
@@ -62,7 +63,7 @@ void AudioComponent::OnUpdateWorldTransform()
 	{
 		if (event.IsValid())
 		{
-			event.Set3DAttributes(world);
+			event.Set3DAttributes(world, mOwner->GetForward());
 		}
 	}
 }
@@ -75,7 +76,7 @@ SoundEvent AudioComponent::PlayEvent(const std::string& name)
 	{
 		mEvents3D.emplace_back(e);
 		// Set initial 3D attributes
-		e.Set3DAttributes(mOwner->GetWorldTransform());
+		e.Set3DAttributes(mOwner->GetWorldTransform(), mOwner->GetForward() * mFowardSpeed);
 	}
 	else
 	{

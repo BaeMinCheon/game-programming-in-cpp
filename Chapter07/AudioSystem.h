@@ -45,7 +45,7 @@ public:
 	void Update(float deltaTime);
 
 	// For positional audio
-	void SetListener(const Matrix4& viewMatrix);
+	void SetListener(const Matrix4& viewMatrix, const Vector3& velocity);
 	// Control buses
 	float GetBusVolume(const std::string& name) const;
 	bool GetBusPaused(const std::string& name) const;

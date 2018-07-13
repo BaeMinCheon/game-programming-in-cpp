@@ -67,6 +67,9 @@
     <ClCompile Include="AudioComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="SphereActor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Actor.h">
@@ -121,6 +124,9 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="AudioComponent.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SphereActor.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

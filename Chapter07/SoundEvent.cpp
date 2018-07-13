@@ -159,7 +159,7 @@ namespace
 	}
 }
 
-void SoundEvent::Set3DAttributes(const Matrix4& worldTrans)
+void SoundEvent::Set3DAttributes(const Matrix4& worldTrans, const Vector3& velocity)
 {
 	auto event = mSystem ? mSystem->GetEventInstance(mID) : nullptr;
 	if (event)
@@ -171,8 +171,9 @@ void SoundEvent::Set3DAttributes(const Matrix4& worldTrans)
 		attr.forward = VecToFMOD(worldTrans.GetXAxis());
 		// Third row is up
 		attr.up = VecToFMOD(worldTrans.GetZAxis());
-		// Set velocity to zero (fix if using Doppler effect)
-		attr.velocity = { 0.0f, 0.0f, 0.0f };
+		// Set velocity
+		attr.velocity = VecToFMOD(velocity);
+
 		event->set3DAttributes(&attr);
 	}
 }
