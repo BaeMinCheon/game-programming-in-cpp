@@ -117,14 +117,21 @@ bool InputSystem::Initialize()
 	mState.Mouse.mCurrButtons = 0;
 	mState.Mouse.mPrevButtons = 0;
 
-	// Get the connected controller, if it exists
-	mController = SDL_GameControllerOpen(0);
-	// Initialize controller state
-	mState.Controller.mIsConnected = (mController != nullptr);
-	memset(mState.Controller.mCurrButtons, 0,
-		SDL_CONTROLLER_BUTTON_MAX);
-	memset(mState.Controller.mPrevButtons, 0,
-		SDL_CONTROLLER_BUTTON_MAX);
+	for (int i = 0; i < 4; ++i)
+	{
+		if(SDL_IsGameController(i))
+		{
+			auto controller = SDL_GameControllerOpen(i);
+			mControllers[i] = controller;
+		}
+
+		mState.Controllers[i].mIsConnected =
+			(mControllers[i] != nullptr);
+		memset(mState.Controllers[i].mCurrButtons,
+			0, SDL_CONTROLLER_BUTTON_MAX);
+		memset(mState.Controllers[i].mPrevButtons,
+			0, SDL_CONTROLLER_BUTTON_MAX);
+	}
 
 	return true;
 }
@@ -147,9 +154,10 @@ void InputSystem::PrepareForUpdate()
 	mState.Mouse.mScrollWheel = Vector2::Zero;
 
 	// Controller
-	memcpy(mState.Controller.mPrevButtons,
-		mState.Controller.mCurrButtons,
-		SDL_CONTROLLER_BUTTON_MAX);
+	for (ControllerState cs : mState.Controllers)
+	{
+		memcpy(cs.mPrevButtons, cs.mCurrButtons, SDL_CONTROLLER_BUTTON_MAX);
+	}
 }
 
 void InputSystem::Update()
@@ -172,33 +180,39 @@ void InputSystem::Update()
 
 	// Controller
 	// Buttons
-	for (int i = 0; i < SDL_CONTROLLER_BUTTON_MAX; i++)
+	for (int n = 0; n < 4; ++n)
 	{
-		mState.Controller.mCurrButtons[i] =
-			SDL_GameControllerGetButton(mController, 
-				SDL_GameControllerButton(i));
+		if (mState.Controllers[n].mIsConnected)
+		{
+			for (int i = 0; i < SDL_CONTROLLER_BUTTON_MAX; i++)
+			{
+				mState.Controllers[n].mCurrButtons[i] =
+					SDL_GameControllerGetButton(mControllers[n],
+						SDL_GameControllerButton(i));
+			}
+
+			// Triggers
+			mState.Controllers[n].mLeftTrigger =
+				Filter1D(SDL_GameControllerGetAxis(mControllers[n],
+					SDL_CONTROLLER_AXIS_TRIGGERLEFT));
+			mState.Controllers[n].mRightTrigger =
+				Filter1D(SDL_GameControllerGetAxis(mControllers[n],
+					SDL_CONTROLLER_AXIS_TRIGGERRIGHT));
+
+			// Sticks
+			x = SDL_GameControllerGetAxis(mControllers[n],
+				SDL_CONTROLLER_AXIS_LEFTX);
+			y = -SDL_GameControllerGetAxis(mControllers[n],
+				SDL_CONTROLLER_AXIS_LEFTY);
+			mState.Controllers[n].mLeftStick = Filter2D(x, y);
+
+			x = SDL_GameControllerGetAxis(mControllers[n],
+				SDL_CONTROLLER_AXIS_RIGHTX);
+			y = -SDL_GameControllerGetAxis(mControllers[n],
+				SDL_CONTROLLER_AXIS_RIGHTY);
+			mState.Controllers[n].mRightStick = Filter2D(x, y);
+		}
 	}
-
-	// Triggers
-	mState.Controller.mLeftTrigger =
-		Filter1D(SDL_GameControllerGetAxis(mController,
-			SDL_CONTROLLER_AXIS_TRIGGERLEFT));
-	mState.Controller.mRightTrigger =
-		Filter1D(SDL_GameControllerGetAxis(mController,
-			SDL_CONTROLLER_AXIS_TRIGGERRIGHT));
-
-	// Sticks
-	x = SDL_GameControllerGetAxis(mController,
-		SDL_CONTROLLER_AXIS_LEFTX);
-	y = -SDL_GameControllerGetAxis(mController,
-		SDL_CONTROLLER_AXIS_LEFTY);
-	mState.Controller.mLeftStick = Filter2D(x, y);
-
-	x = SDL_GameControllerGetAxis(mController,
-		SDL_CONTROLLER_AXIS_RIGHTX);
-	y = -SDL_GameControllerGetAxis(mController,
-		SDL_CONTROLLER_AXIS_RIGHTY);
-	mState.Controller.mRightStick = Filter2D(x, y);
 }
 
 void InputSystem::ProcessEvent(SDL_Event& event)
@@ -210,8 +224,35 @@ void InputSystem::ProcessEvent(SDL_Event& event)
 			static_cast<float>(event.wheel.x),
 			static_cast<float>(event.wheel.y));
 		break;
+	case SDL_CONTROLLERDEVICEADDED:
+	case SDL_CONTROLLERDEVICEREMOVED:
+		RefreshController();
+		break;
 	default:
 		break;
+	}
+}
+
+void InputSystem::RefreshController()
+{
+	for (int i = 0; i < 4; ++i)
+	{
+		mControllers[i] = nullptr;
+	}
+	for (int i = 0; i < 4; ++i)
+	{
+		if (SDL_IsGameController(i))
+		{
+			auto controller = SDL_GameControllerOpen(i);
+			mControllers[i] = controller;
+		}
+
+		mState.Controllers[i].mIsConnected =
+			(mControllers[i] != nullptr);
+		memset(mState.Controllers[i].mCurrButtons,
+			0, SDL_CONTROLLER_BUTTON_MAX);
+		memset(mState.Controllers[i].mPrevButtons,
+			0, SDL_CONTROLLER_BUTTON_MAX);
 	}
 }
 

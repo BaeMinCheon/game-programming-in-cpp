@@ -125,6 +125,12 @@ void Game::ProcessInput()
 			case SDL_MOUSEWHEEL:
 				mInputSystem->ProcessEvent(event);
 				break;
+			case SDL_CONTROLLERDEVICEADDED:
+				mInputSystem->ProcessEvent(event);
+				break;
+			case SDL_CONTROLLERDEVICEREMOVED:
+				mInputSystem->ProcessEvent(event);
+				break;
 			default:
 				break;
 		}

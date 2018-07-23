@@ -11,7 +11,7 @@
 class Ship : public Actor
 {
 public:
-	Ship(class Game* game);
+	Ship(class Game* game, int conID = 0);
 
 	void UpdateActor(float deltaTime) override;
 	void ActorInput(const struct InputState& state) override;
@@ -20,4 +20,5 @@ private:
 	Vector2 mRotationDir;
 	float mSpeed;
 	float mLaserCooldown;
+	int mControllerID;
 };
