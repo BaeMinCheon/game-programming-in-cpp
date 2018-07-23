@@ -10,7 +10,8 @@
 #include <SDL/SDL_scancode.h>
 #include <SDL/SDL_gamecontroller.h>
 #include <SDL/SDL_mouse.h>
-#include <vector>
+#include <unordered_map>
+#include <string>
 #include "Math.h"
 
 // The different button states
@@ -99,12 +100,19 @@ struct InputState
 	KeyboardState Keyboard;
 	MouseState Mouse;
 	ControllerState Controllers[4];
+
+	std::unordered_map<std::string, SDL_Scancode> KBMap;
+	ButtonState GetMappedButtonState(const std::string& actionName) const
+	{
+		return Keyboard.GetKeyState(KBMap.at(actionName));
+	}
 };
 
 class InputSystem
 {
 public:
 	bool Initialize();
+	void LoadMapping();
 	void Shutdown();
 
 	// Called right before SDL_PollEvents loop

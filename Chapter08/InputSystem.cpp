@@ -9,6 +9,7 @@
 #include "InputSystem.h"
 #include <SDL/SDL.h>
 #include <cstring>
+#include <fstream>
 
 bool KeyboardState::GetKeyValue(SDL_Scancode keyCode) const
 {
@@ -133,7 +134,41 @@ bool InputSystem::Initialize()
 			0, SDL_CONTROLLER_BUTTON_MAX);
 	}
 
+	LoadMapping();
+
 	return true;
+}
+
+void InputSystem::LoadMapping()
+{
+	std::fstream fs;
+	fs.open("Assets/KeyMapping.txt");
+	if (!fs.is_open())
+	{
+		SDL_Log("Failed to load key mapping.");
+	}
+
+	char buffer[256];
+	while (fs.getline(buffer, 256))
+	{
+		std::string mapping(buffer);
+		std::size_t index = -1;
+
+		index = mapping.find(",");
+		std::string actionName = mapping.substr(0, index);
+		mapping.erase(0, index + 1);
+
+		index = mapping.find(",");
+		std::string deviceName = mapping.substr(0, index);
+		mapping.erase(0, index + 1);
+
+		int value = stoi(mapping);
+		SDL_Scancode code = static_cast<SDL_Scancode>(value);
+
+		mState.KBMap[actionName] = code;
+	}
+
+	fs.close();
 }
 
 void InputSystem::Shutdown()
