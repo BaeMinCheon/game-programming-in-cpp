@@ -59,6 +59,20 @@ void FollowActor::ActorInput(const uint8_t* keys)
 	{
 		mCameraComp->SetHorzDist(350.0f);
 	}
+
+	int x, y;
+	Uint32 buttons = SDL_GetRelativeMouseState(&x, &y);
+	// Only apply rotation if right-click is held
+	if (buttons & SDL_BUTTON(SDL_BUTTON_RIGHT))
+	{
+		mCameraComp->SetYawSpeed(1.0f);
+		mCameraComp->SetPitchSpeed(0.0f);
+	}
+	else
+	{
+		mCameraComp->SetYawSpeed(0.0f);
+		mCameraComp->SetPitchSpeed(0.0f);
+	}
 }
 
 void FollowActor::SetVisible(bool visible)
