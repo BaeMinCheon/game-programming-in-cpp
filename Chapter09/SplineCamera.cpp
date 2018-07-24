@@ -6,6 +6,7 @@
 // See LICENSE in root directory for full details.
 // ----------------------------------------------------------------
 
+#include <algorithm>
 #include "SplineCamera.h"
 #include "Actor.h"
 
@@ -70,6 +71,11 @@ void SplineCamera::Update(float deltaTime)
 				mPaused = true;
 			}
 		}
+	}
+	else
+	{
+		std::reverse(mPath.mControlPoints.begin(), mPath.mControlPoints.end());
+		Restart();
 	}
 
 	// Camera position is the spline at the current t/index
