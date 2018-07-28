@@ -45,4 +45,6 @@ public:
 private:
 	class Game* mGame;
 	std::vector<class BoxComponent*> mBoxes;
+	std::vector<class BoxComponent*> mBoxesY;
+	std::vector<class BoxComponent*> mBoxesZ;
 };

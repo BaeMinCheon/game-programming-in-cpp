@@ -67,11 +67,10 @@ void PhysWorld::TestSweepAndPrune(std::function<void(Actor*, Actor*)> f)
 {
 	// Sort by min.x
 	std::sort(mBoxes.begin(), mBoxes.end(),
-		[](BoxComponent* a, BoxComponent* b) {
-			return a->GetWorldBox().mMin.x <
-				b->GetWorldBox().mMin.x;
+		[](BoxComponent* a, BoxComponent* b)
+	{
+		return a->GetWorldBox().mMin.x < b->GetWorldBox().mMin.x;
 	});
-
 	for (std::size_t i = 0; i < mBoxes.size(); i++)
 	{
 		// Get max.x for current box
@@ -87,12 +86,68 @@ void PhysWorld::TestSweepAndPrune(std::function<void(Actor*, Actor*)> f)
 			{
 				break;
 			}
+			else
+			{
+				mBoxesY.push_back(b);
+			}
+		}
+	}
+
+	std::sort(mBoxesY.begin(), mBoxesY.end(),
+		[](BoxComponent* a, BoxComponent* b)
+	{
+		return a->GetWorldBox().mMin.y < b->GetWorldBox().mMin.y;
+	});
+	for (std::size_t i = 0; i < mBoxesY.size(); ++i)
+	{
+		// Get max.y for current box
+		BoxComponent* a = mBoxesY[i];
+		float max = a->GetWorldBox().mMax.y;
+		for (std::size_t j = i + 1; j < mBoxesY.size(); j++)
+		{
+			BoxComponent* b = mBoxesY[j];
+			// If AABB[j] min is past the max bounds of AABB[i],
+			// then there aren't any other possible intersections
+			// against AABB[i]
+			if (b->GetWorldBox().mMin.y > max)
+			{
+				break;
+			}
+			else
+			{
+				mBoxesZ.push_back(b);
+			}
+		}
+	}
+	mBoxesY.clear();
+
+	std::sort(mBoxesZ.begin(), mBoxesZ.end(),
+		[](BoxComponent* a, BoxComponent* b)
+	{
+		return a->GetWorldBox().mMin.z < b->GetWorldBox().mMin.z;
+	});
+	for (std::size_t i = 0; i < mBoxesZ.size(); ++i)
+	{
+		// Get max.y for current box
+		BoxComponent* a = mBoxesZ[i];
+		float max = a->GetWorldBox().mMax.z;
+		for (std::size_t j = i + 1; j < mBoxesZ.size(); j++)
+		{
+			BoxComponent* b = mBoxesZ[j];
+			// If AABB[j] min is past the max bounds of AABB[i],
+			// then there aren't any other possible intersections
+			// against AABB[i]
+			if (b->GetWorldBox().mMin.z > max)
+			{
+				break;
+			}
 			else if (Intersect(a->GetWorldBox(), b->GetWorldBox()))
 			{
 				f(a->GetOwner(), b->GetOwner());
 			}
 		}
 	}
+	mBoxesZ.clear();
 }
 
 void PhysWorld::AddBox(BoxComponent* box)
