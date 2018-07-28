@@ -19,11 +19,14 @@ public:
 	float GetAngularSpeed() const { return mAngularSpeed; }
 	float GetForwardSpeed() const { return mForwardSpeed; }
 	float GetStrafeSpeed() const { return mStrafeSpeed; }
+	float GetJumpSpeed() const { return mJumpSpeed; }
 	void SetAngularSpeed(float speed) { mAngularSpeed = speed; }
 	void SetForwardSpeed(float speed) { mForwardSpeed = speed; }
 	void SetStrafeSpeed(float speed) { mStrafeSpeed = speed; }
+	void SetJumpSpeed(float speed) { mJumpSpeed = speed; }
 protected:
 	float mAngularSpeed;
 	float mForwardSpeed;
 	float mStrafeSpeed;
+	float mJumpSpeed;
 };

@@ -13,6 +13,13 @@
 class FPSActor : public Actor
 {
 public:
+	enum JumpState
+	{
+		EStanding,
+		EJumping,
+		EFalling
+	};
+
 	FPSActor(class Game* game);
 
 	void UpdateActor(float deltaTime) override;
@@ -25,6 +32,10 @@ public:
 	void SetVisible(bool visible);
 
 	void FixCollisions();
+
+	JumpState GetJumpState() const { return mJumpState; }
+	void SetJumpState(JumpState state) { mJumpState = state; }
+
 private:
 	class MoveComponent* mMoveComp;
 	class AudioComponent* mAudioComp;
@@ -34,4 +45,6 @@ private:
 	class Actor* mFPSModel;
 	SoundEvent mFootstep;
 	float mLastFootstep;
+	JumpState mJumpState;
+	int mJumpCount;
 };

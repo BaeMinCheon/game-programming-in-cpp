@@ -22,7 +22,7 @@ public:
 	// Get the vertex array associated with this mesh
 	class VertexArray* GetVertexArray() { return mVertexArray; }
 	// Get a texture from specified index
-	class Texture* GetTexture(size_t index);
+	class Texture* GetTexture(std::size_t index);
 	// Get name of shader
 	const std::string& GetShaderName() const { return mShaderName; }
 	// Get object space bounding sphere radius

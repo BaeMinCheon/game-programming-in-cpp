@@ -63,7 +63,7 @@ bool Mesh::Load(const std::string& fileName, Renderer* renderer)
 
 	// Skip the vertex format/shader for now
 	// (This is changed in a later chapter's code)
-	size_t vertSize = 8;
+	std::size_t vertSize = 8;
 
 	// Load textures
 	const rapidjson::Value& textures = doc["textures"];
@@ -164,7 +164,7 @@ void Mesh::Unload()
 	mVertexArray = nullptr;
 }
 
-Texture* Mesh::GetTexture(size_t index)
+Texture* Mesh::GetTexture(std::size_t index)
 {
 	if (index < mTextures.size())
 	{

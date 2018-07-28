@@ -206,7 +206,7 @@ void AABB::Rotate(const Quaternion& q)
 	mMin = p;
 	mMax = p;
 	// Update min/max based on remaining points, rotated
-	for (size_t i = 1; i < points.size(); i++)
+	for (std::size_t i = 1; i < points.size(); i++)
 	{
 		p = Vector3::Transform(points[i], q);
 		UpdateMinMax(p);
@@ -260,7 +260,7 @@ bool ConvexPolygon::Contains(const Vector2& point) const
 {
 	float sum = 0.0f;
 	Vector2 a, b;
-	for (size_t i = 0; i < mVertices.size() - 1; i++)
+	for (std::size_t i = 0; i < mVertices.size() - 1; i++)
 	{
 		// From point to first vertex
 		a = mVertices[i] - point;

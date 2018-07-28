@@ -41,11 +41,33 @@ FPSActor::FPSActor(Game* game)
 		Vector3(25.0f, 25.0f, 87.5f));
 	mBoxComp->SetObjectBox(myBox);
 	mBoxComp->SetShouldRotate(false);
+
+	mJumpState = JumpState::EStanding;
+	mJumpCount = 0;
 }
 
 void FPSActor::UpdateActor(float deltaTime)
 {
 	Actor::UpdateActor(deltaTime);
+
+	float jumpSpeed = 0.0f;
+	if (mJumpState != JumpState::EStanding)
+	{
+		if (mJumpState == JumpState::EJumping)
+		{
+			jumpSpeed += 400.0f;
+			--mJumpCount;
+
+			if (mJumpCount == 0)
+			{
+				mJumpState = JumpState::EFalling;
+			}
+		}
+
+		// gravity
+		jumpSpeed -= (15 - mJumpCount) * 25.0f;
+	}
+	mMoveComp->SetJumpSpeed(jumpSpeed);
 
 	FixCollisions();
 
@@ -94,6 +116,14 @@ void FPSActor::ActorInput(const uint8_t* keys)
 	if (keys[SDL_SCANCODE_D])
 	{
 		strafeSpeed += 400.0f;
+	}
+	if (keys[SDL_SCANCODE_SPACE])
+	{
+		if (mJumpState == JumpState::EStanding)
+		{
+			mJumpState = JumpState::EJumping;
+			mJumpCount = 15;
+		}
 	}
 
 	mMoveComp->SetForwardSpeed(forwardSpeed);
@@ -208,6 +238,11 @@ void FPSActor::FixCollisions()
 			else
 			{
 				pos.z += dz;
+				// recovery
+				if (mJumpState == JumpState::EFalling)
+				{
+					mJumpState = JumpState::EStanding;
+				}
 			}
 
 			// Need to set position and update box component

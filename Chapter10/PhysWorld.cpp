@@ -72,12 +72,12 @@ void PhysWorld::TestSweepAndPrune(std::function<void(Actor*, Actor*)> f)
 				b->GetWorldBox().mMin.x;
 	});
 
-	for (size_t i = 0; i < mBoxes.size(); i++)
+	for (std::size_t i = 0; i < mBoxes.size(); i++)
 	{
 		// Get max.x for current box
 		BoxComponent* a = mBoxes[i];
 		float max = a->GetWorldBox().mMax.x;
-		for (size_t j = i + 1; j < mBoxes.size(); j++)
+		for (std::size_t j = i + 1; j < mBoxes.size(); j++)
 		{
 			BoxComponent* b = mBoxes[j];
 			// If AABB[j] min is past the max bounds of AABB[i],
