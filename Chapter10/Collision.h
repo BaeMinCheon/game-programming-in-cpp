@@ -62,8 +62,11 @@ struct AABB
 
 struct OBB
 {
+	// center point
 	Vector3 mCenter;
+	// quaternion for rotation
 	Quaternion mRotation;
+	// width + height + depth
 	Vector3 mExtents;
 };
 
@@ -88,6 +91,9 @@ struct ConvexPolygon
 // Intersection functions
 bool Intersect(const Sphere& a, const Sphere& b);
 bool Intersect(const AABB& a, const AABB& b);
+bool Intersect(const OBB& a, const OBB& b);
+void FindMinMaxProj(Vector3& axe, Vector3& pt1, Vector3& pt2,
+	float* min, float* max);
 bool Intersect(const Capsule& a, const Capsule& b);
 bool Intersect(const Sphere& s, const AABB& box);
 

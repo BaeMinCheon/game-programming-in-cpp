@@ -300,6 +300,187 @@ bool Intersect(const AABB& a, const AABB& b)
 	return !no;
 }
 
+bool Intersect(const OBB& a, const OBB& b)
+{
+	// order
+	// first side	second side
+	// 1 2			5 6
+	// 0 3			4 7
+	Vector3 cornerA[8] =
+	{
+		// first side
+		Vector3::Transform(Vector3(a.mCenter.x - a.mExtents.x / 2.0f,
+				a.mCenter.y - a.mExtents.y / 2.0f,
+				a.mCenter.z - a.mExtents.z / 2.0f), a.mRotation),
+		Vector3::Transform(Vector3(a.mCenter.x - a.mExtents.x / 2.0f,
+				a.mCenter.y - a.mExtents.y / 2.0f,
+				a.mCenter.z + a.mExtents.z / 2.0f), a.mRotation),
+		Vector3::Transform(Vector3(a.mCenter.x - a.mExtents.x / 2.0f,
+				a.mCenter.y + a.mExtents.y / 2.0f,
+				a.mCenter.z + a.mExtents.z / 2.0f), a.mRotation),
+		Vector3::Transform(Vector3(a.mCenter.x - a.mExtents.x / 2.0f,
+				a.mCenter.y + a.mExtents.y / 2.0f,
+				a.mCenter.z - a.mExtents.z / 2.0f), a.mRotation),
+		// second side
+		Vector3::Transform(Vector3(a.mCenter.x + a.mExtents.x / 2.0f,
+				a.mCenter.y - a.mExtents.y / 2.0f,
+				a.mCenter.z - a.mExtents.z / 2.0f), a.mRotation),
+		Vector3::Transform(Vector3(a.mCenter.x + a.mExtents.x / 2.0f,
+				a.mCenter.y - a.mExtents.y / 2.0f,
+				a.mCenter.z + a.mExtents.z / 2.0f), a.mRotation),
+		Vector3::Transform(Vector3(a.mCenter.x + a.mExtents.x / 2.0f,
+				a.mCenter.y + a.mExtents.y / 2.0f,
+				a.mCenter.z + a.mExtents.z / 2.0f), a.mRotation),
+		Vector3::Transform(Vector3(a.mCenter.x + a.mExtents.x / 2.0f,
+				a.mCenter.y + a.mExtents.y / 2.0f,
+				a.mCenter.z - a.mExtents.z / 2.0f), a.mRotation)
+	};
+	Vector3 cornerB[8] =
+	{
+		// first side
+		Vector3::Transform(Vector3(b.mCenter.x - b.mExtents.x / 2.0f,
+				b.mCenter.y - b.mExtents.y / 2.0f,
+				b.mCenter.z - b.mExtents.z / 2.0f), b.mRotation),
+		Vector3::Transform(Vector3(b.mCenter.x - b.mExtents.x / 2.0f,
+				b.mCenter.y - b.mExtents.y / 2.0f,
+				b.mCenter.z + b.mExtents.z / 2.0f), b.mRotation),
+		Vector3::Transform(Vector3(b.mCenter.x - b.mExtents.x / 2.0f,
+				b.mCenter.y + b.mExtents.y / 2.0f,
+				b.mCenter.z + b.mExtents.z / 2.0f), b.mRotation),
+		Vector3::Transform(Vector3(b.mCenter.x - b.mExtents.x / 2.0f,
+				b.mCenter.y + b.mExtents.y / 2.0f,
+				b.mCenter.z - b.mExtents.z / 2.0f), b.mRotation),
+		// second side
+		Vector3::Transform(Vector3(b.mCenter.x + b.mExtents.x / 2.0f,
+				b.mCenter.y - b.mExtents.y / 2.0f,
+				b.mCenter.z - b.mExtents.z / 2.0f), b.mRotation),
+		Vector3::Transform(Vector3(b.mCenter.x + b.mExtents.x / 2.0f,
+				b.mCenter.y - b.mExtents.y / 2.0f,
+				b.mCenter.z + b.mExtents.z / 2.0f), b.mRotation),
+		Vector3::Transform(Vector3(b.mCenter.x + b.mExtents.x / 2.0f,
+				b.mCenter.y + b.mExtents.y / 2.0f,
+				b.mCenter.z + b.mExtents.z / 2.0f), b.mRotation),
+		Vector3::Transform(Vector3(b.mCenter.x + b.mExtents.x / 2.0f,
+				b.mCenter.y + b.mExtents.y / 2.0f,
+				b.mCenter.z - b.mExtents.z / 2.0f), b.mRotation)
+	};
+	// order
+	// x y z
+	Vector3 axeA[3] =
+	{
+		Vector3::Transform(Vector3::UnitX, a.mRotation),
+		Vector3::Transform(Vector3::UnitY, a.mRotation),
+		Vector3::Transform(Vector3::UnitZ, a.mRotation)
+	};
+
+	// x axis -> axeA[0]
+	bool isOverlapX = false;
+	for (int i = 0; i < 4; ++i)
+	{
+		float minA = 0.0f;
+		float maxA = 0.0f;
+		FindMinMaxProj(axeA[0], cornerA[i], cornerA[i + 4], &minA, &maxA);
+
+		float minB = 0.0f;
+		float maxB = 0.0f;
+		FindMinMaxProj(axeA[0], cornerB[0], cornerB[1], &minB, &maxB);
+		if (minB < maxA && maxB > minA)
+		{
+			isOverlapX = true;
+			break;
+		}
+		FindMinMaxProj(axeA[0], cornerB[1], cornerB[2], &minB, &maxB);
+		if (minB < maxA && maxB > minA)
+		{
+			isOverlapX = true;
+			break;
+		}
+		// same process onto rest of them...
+	}
+
+	// y axis -> axeA[1]
+	bool isOverlapY = false;
+	for (int i = 0; i < 4;)
+	{
+		int offset = (i % 4 == 0) ? (i + 3) : (i + 1);
+
+		float minA = 0.0f;
+		float maxA = 0.0f;
+		FindMinMaxProj(axeA[1], cornerA[i], cornerA[offset], &minA, &maxA);
+
+		float minB = 0.0f;
+		float maxB = 0.0f;
+		FindMinMaxProj(axeA[1], cornerB[0], cornerB[1], &minB, &maxB);
+		if (minB < maxA && maxB > minA)
+		{
+			isOverlapY = true;
+			break;
+		}
+		FindMinMaxProj(axeA[1], cornerB[1], cornerB[2], &minB, &maxB);
+		if (minB < maxA && maxB > minA)
+		{
+			isOverlapY = true;
+			break;
+		}
+		// same process onto rest of them...
+
+		if (i % 4 == 0)
+		{
+			++i;
+		}
+		else
+		{
+			i += 3;
+		}
+	}
+
+	// z axis -> axeA[2]
+	bool isOverlapZ = false;
+	for (int i = 0; i < 8; i += 2)
+	{
+		float minA = 0.0f;
+		float maxA = 0.0f;
+		FindMinMaxProj(axeA[2], cornerA[i], cornerA[i + 1], &minA, &maxA);
+
+		float minB = 0.0f;
+		float maxB = 0.0f;
+		FindMinMaxProj(axeA[2], cornerB[0], cornerB[1], &minB, &maxB);
+		if (minB < maxA && maxB > minA)
+		{
+			isOverlapZ = true;
+			break;
+		}
+		FindMinMaxProj(axeA[2], cornerB[1], cornerB[2], &minB, &maxB);
+		if (minB < maxA && maxB > minA)
+		{
+			isOverlapZ = true;
+			break;
+		}
+		// same process onto rest of them...
+	}
+
+	// when it intersects
+	return isOverlapX && isOverlapY && isOverlapZ;
+}
+
+void FindMinMaxProj(Vector3& axe, Vector3& pt1, Vector3& pt2,
+	float* min, float* max)
+{
+	float proj01 = Vector3::Dot(axe, pt1);
+	float proj02 = Vector3::Dot(axe, pt2);
+
+	if (proj01 > proj02)
+	{
+		*min = proj02;
+		*max = proj01;
+	}
+	else
+	{
+		*min = proj01;
+		*max = proj02;
+	}
+}
+
 bool Intersect(const Capsule& a, const Capsule& b)
 {
 	float distSq = LineSegment::MinDistSq(a.mSegment, 
