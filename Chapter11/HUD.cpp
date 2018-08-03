@@ -28,6 +28,8 @@ HUD::HUD(Game* game)
 	mCrosshair = r->GetTexture("Assets/Crosshair.png");
 	mCrosshairEnemy = r->GetTexture("Assets/CrosshairRed.png");
 	mBlipTex = r->GetTexture("Assets/Blip.png");
+	mBlipDownTex = r->GetTexture("Assets/BlipDown.png");
+	mBlipUpTex = r->GetTexture("Assets/BlipUp.png");
 	mRadarArrow = r->GetTexture("Assets/RadarArrow.png");
 }
 
@@ -56,6 +58,14 @@ void HUD::Draw(Shader* shader)
 	for (Vector2& blip : mBlips)
 	{
 		DrawTexture(shader, mBlipTex, cRadarPos + blip, 1.0f);
+	}
+	for (Vector2& blip : mBlipDowns)
+	{
+		DrawTexture(shader, mBlipDownTex, cRadarPos + blip, 1.0f);
+	}
+	for (Vector2& blip : mBlipUps)
+	{
+		DrawTexture(shader, mBlipUpTex, cRadarPos + blip, 1.0f);
 	}
 	// Radar arrow
 	DrawTexture(shader, mRadarArrow, cRadarPos);
@@ -105,10 +115,13 @@ void HUD::UpdateRadar(float deltaTime)
 {
 	// Clear blip positions from last frame
 	mBlips.clear();
+	mBlipDowns.clear();
+	mBlipUps.clear();
 	
 	// Convert player position to radar coordinates (x forward, z up)
 	Vector3 playerPos = mGame->GetPlayer()->GetPosition();
 	Vector2 playerPos2D(playerPos.y, playerPos.x);
+	float playerHeight = playerPos.z;
 	// Ditto for player forward
 	Vector3 playerForward = mGame->GetPlayer()->GetForward();
 	Vector2 playerForward2D(playerForward.x, playerForward.y);
@@ -123,6 +136,7 @@ void HUD::UpdateRadar(float deltaTime)
 	{
 		Vector3 targetPos = tc->GetOwner()->GetPosition();
 		Vector2 actorPos2D(targetPos.y, targetPos.x);
+		float targetHeight = targetPos.z;
 		
 		// Calculate vector between player and target
 		Vector2 playerToTarget = actorPos2D - playerPos2D;
@@ -137,7 +151,18 @@ void HUD::UpdateRadar(float deltaTime)
 			
 			// Rotate blipPos
 			blipPos = Vector2::Transform(blipPos, rotMat);
-			mBlips.emplace_back(blipPos);
+			if (targetHeight > playerHeight)
+			{
+				mBlipUps.emplace_back(blipPos);
+			}
+			else if(targetHeight < playerHeight)
+			{
+				mBlipDowns.emplace_back(blipPos);
+			}
+			else
+			{
+				mBlips.emplace_back(blipPos);
+			}
 		}
 	}
 }

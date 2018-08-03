@@ -31,12 +31,16 @@ protected:
 	class Texture* mCrosshair;
 	class Texture* mCrosshairEnemy;
 	class Texture* mBlipTex;
+	class Texture* mBlipDownTex;
+	class Texture* mBlipUpTex;
 	class Texture* mRadarArrow;
 	
 	// All the target components in the game
 	std::vector<class TargetComponent*> mTargetComps;
 	// 2D offsets of blips relative to radar
 	std::vector<Vector2> mBlips;
+	std::vector<Vector2> mBlipDowns;
+	std::vector<Vector2> mBlipUps;
 	// Adjust range of radar and radius
 	float mRadarRange;
 	float mRadarRadius;
