@@ -15,6 +15,7 @@
 #include "FPSActor.h"
 #include <algorithm>
 #include "TargetComponent.h"
+#include "ArrowTarget.h"
 
 HUD::HUD(Game* game)
 	:UIScreen(game)
@@ -31,6 +32,7 @@ HUD::HUD(Game* game)
 	mBlipDownTex = r->GetTexture("Assets/BlipDown.png");
 	mBlipUpTex = r->GetTexture("Assets/BlipUp.png");
 	mRadarArrow = r->GetTexture("Assets/RadarArrow.png");
+	mTargetArrow = r->GetTexture("Assets/Arrow.png");
 }
 
 HUD::~HUD()
@@ -72,6 +74,10 @@ void HUD::Draw(Shader* shader)
 	
 	//// Health bar
 	//DrawTexture(shader, mHealthBar, Vector2(-350.0f, -350.0f));
+
+	// Target arrow
+	const Vector2 cArrowPos(0.0f, 275.0f);
+	DrawTexture(shader, mTargetArrow, cArrowPos, 1.0f, mAngle);
 }
 
 void HUD::AddTargetComponent(TargetComponent* tc)
@@ -164,5 +170,19 @@ void HUD::UpdateRadar(float deltaTime)
 				mBlips.emplace_back(blipPos);
 			}
 		}
+	}
+
+	// Get position of arrow target
+	auto at = mGame->GetArrowTarget();
+	{
+		Vector3 targetPos = at->GetPosition();
+		Vector2 targetPos2D(targetPos.x, targetPos.y);
+
+		playerPos2D.Set(playerPos.x, playerPos.y);
+		Vector2 playerToTarget = targetPos2D - playerPos2D;
+		playerToTarget.Normalize();
+
+		mAngle = Math::Atan2(playerToTarget.x, playerToTarget.y)
+			- Math::Atan2(playerForward2D.x, playerForward2D.y);
 	}
 }

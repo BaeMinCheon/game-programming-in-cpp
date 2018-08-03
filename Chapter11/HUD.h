@@ -34,6 +34,7 @@ protected:
 	class Texture* mBlipDownTex;
 	class Texture* mBlipUpTex;
 	class Texture* mRadarArrow;
+	class Texture* mTargetArrow;
 	
 	// All the target components in the game
 	std::vector<class TargetComponent*> mTargetComps;
@@ -46,4 +47,6 @@ protected:
 	float mRadarRadius;
 	// Whether the crosshair targets an enemy
 	bool mTargetEnemy;
+	// angle for arrow target
+	float mAngle;
 };

@@ -27,11 +27,13 @@
 #include <sstream>
 #include <rapidjson/document.h>
 #include "MainMenu.h"
+#include "ArrowTarget.h"
 
 Game::Game()
 :mRenderer(nullptr)
 ,mAudioSystem(nullptr)
 ,mPhysWorld(nullptr)
+,mArrowTarget(nullptr)
 ,mGameState(EMainMenu)
 ,mPrevState(EMainMenu)
 ,mUpdatingActors(false)
@@ -389,6 +391,9 @@ void Game::LoadData()
 	a = new TargetActor(this);
 	a->SetPosition(Vector3(0.0f, 1450.0f, 200.0f));
 	a->SetRotation(Quaternion(Vector3::UnitZ, -Math::PiOver2));
+
+	mArrowTarget = new ArrowTarget(this);
+	mArrowTarget->SetPosition(Vector3(1450.0f, 0.0f, 0.0f));
 }
 
 void Game::UnloadData()

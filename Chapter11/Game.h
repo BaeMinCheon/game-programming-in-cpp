@@ -55,6 +55,8 @@ public:
 	void AddPlane(class PlaneActor* plane);
 	void RemovePlane(class PlaneActor* plane);
 	std::vector<class PlaneActor*>& GetPlanes() { return mPlanes; }
+
+	class ArrowTarget* GetArrowTarget() { return mArrowTarget; }
 private:
 	void ProcessInput();
 	void HandleKeyPress(int key);
@@ -77,6 +79,7 @@ private:
 	class AudioSystem* mAudioSystem;
 	class PhysWorld* mPhysWorld;
 	class HUD* mHUD;
+	class ArrowTarget* mArrowTarget;
 
 	Uint32 mTicksCount;
 	GameState mGameState;
