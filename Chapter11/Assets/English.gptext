@@ -1,5 +1,7 @@
 {
 	"TextMap":{
+		"MainMenu": "The Game",
+		"StartButton": "Start",
 		"PauseTitle": "PAUSED",
 		"ResumeButton": "Resume",
 		"QuitButton": "Quit",

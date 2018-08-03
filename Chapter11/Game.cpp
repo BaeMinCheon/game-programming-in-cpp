@@ -26,12 +26,14 @@
 #include <fstream>
 #include <sstream>
 #include <rapidjson/document.h>
+#include "MainMenu.h"
 
 Game::Game()
 :mRenderer(nullptr)
 ,mAudioSystem(nullptr)
 ,mPhysWorld(nullptr)
-,mGameState(EGameplay)
+,mGameState(EMainMenu)
+,mPrevState(EMainMenu)
 ,mUpdatingActors(false)
 {
 	
@@ -76,10 +78,12 @@ bool Game::Initialize()
 		return false;
 	}
 
-	LoadData();
-
 	mTicksCount = SDL_GetTicks();
 	
+	// Load English text
+	LoadText("Assets/English.gptext");
+	new MainMenu(this);
+
 	return true;
 }
 
@@ -112,7 +116,7 @@ void Game::ProcessInput()
 		switch (event.type)
 		{
 			case SDL_QUIT:
-				mGameState = EQuit;
+				SetState(EQuit);
 				break;
 			// This fires when a key's initially pressed
 			case SDL_KEYDOWN:
@@ -223,8 +227,24 @@ void Game::UpdateGame()
 	}
 	mTicksCount = SDL_GetTicks();
 
+	if (mGameState == EMainMenu)
+	{
+		if (mPrevState == EPaused)
+		{
+			UnloadData();
+			mPrevState = mGameState;
+
+			new MainMenu(this);
+		}
+	}
 	if (mGameState == EGameplay)
 	{
+		if (mPrevState == EMainMenu)
+		{
+			LoadData();
+			mPrevState = mGameState;
+		}
+
 		// Update all actors
 		mUpdatingActors = true;
 		for (auto actor : mActors)
@@ -292,9 +312,6 @@ void Game::GenerateOutput()
 
 void Game::LoadData()
 {
-	// Load English text
-	LoadText("Assets/English.gptext");
-
 	// Create actors
 	Actor* a = nullptr;
 	Quaternion q;

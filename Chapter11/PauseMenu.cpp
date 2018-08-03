@@ -17,21 +17,25 @@ PauseMenu::PauseMenu(Game* game)
 	mGame->SetState(Game::EPaused);
 	SetRelativeMouseMode(false);
 	SetTitle("PauseTitle");
-	AddButton("ResumeButton", [this]() {
+	AddButton("ResumeButton", [this]()
+	{
+		SetRelativeMouseMode(true);
+		mGame->SetState(Game::EGameplay);
 		Close();
 	});
-	AddButton("QuitButton", [this]() { 
-		new DialogBox(mGame, "QuitText",
-			[this]() {
-				mGame->SetState(Game::EQuit);
+	AddButton("QuitButton", [this]()
+	{ 
+		new DialogBox(mGame, "QuitText", [this]()
+		{
+			mGame->SetState(Game::EMainMenu);
+			Close();
 		});
 	});
 }
 
 PauseMenu::~PauseMenu()
 {
-	SetRelativeMouseMode(true);
-	mGame->SetState(Game::EGameplay);
+	;
 }
 
 void PauseMenu::HandleKeyPress(int key)
@@ -40,6 +44,8 @@ void PauseMenu::HandleKeyPress(int key)
 	
 	if (key == SDLK_ESCAPE)
 	{
+		SetRelativeMouseMode(true);
+		mGame->SetState(Game::EGameplay);
 		Close();
 	}
 }

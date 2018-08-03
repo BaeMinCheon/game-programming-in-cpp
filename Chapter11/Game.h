@@ -38,13 +38,14 @@ public:
 	
 	enum GameState
 	{
+		EMainMenu,
 		EGameplay,
 		EPaused,
 		EQuit
 	};
 	
 	GameState GetState() const { return mGameState; }
-	void SetState(GameState state) { mGameState = state; }
+	void SetState(GameState state) { mPrevState = mGameState; mGameState = state; }
 	
 	class Font* GetFont(const std::string& fileName);
 
@@ -79,6 +80,7 @@ private:
 
 	Uint32 mTicksCount;
 	GameState mGameState;
+	GameState mPrevState;
 	// Track if we're updating actors right now
 	bool mUpdatingActors;
 

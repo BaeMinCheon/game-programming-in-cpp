@@ -59,7 +59,7 @@ void Font::Unload()
 
 Texture* Font::RenderText(const std::string& textKey,
 						  const Vector3& color /*= Color::White*/,
-						  int pointSize /*= 24*/)
+						  int pointSize /*= 30*/)
 {
 	Texture* texture = nullptr;
 	
@@ -77,7 +77,8 @@ Texture* Font::RenderText(const std::string& textKey,
 		TTF_Font* font = iter->second;
 		const std::string& actualText = mGame->GetText(textKey);
 		// Draw this to a surface (blended for alpha)
-		SDL_Surface* surf = TTF_RenderUTF8_Blended(font, actualText.c_str(), sdlColor);
+		SDL_Surface* surf =
+			TTF_RenderUTF8_Blended(font, actualText.c_str(), sdlColor);
 		if (surf != nullptr)
 		{
 			// Convert from surface to texture
