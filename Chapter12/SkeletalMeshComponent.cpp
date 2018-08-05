@@ -6,6 +6,7 @@
 // See LICENSE in root directory for full details.
 // ----------------------------------------------------------------
 
+#include <algorithm>
 #include "SkeletalMeshComponent.h"
 #include "Shader.h"
 #include "Mesh.h"
@@ -20,6 +21,7 @@
 SkeletalMeshComponent::SkeletalMeshComponent(Actor* owner)
 	:MeshComponent(owner, true)
 	,mSkeleton(nullptr)
+	,mBlendTime(0.0f)
 {
 }
 
@@ -59,6 +61,30 @@ void SkeletalMeshComponent::Update(float deltaTime)
 		{
 			mAnimTime -= mAnimation->GetDuration();
 		}
+		
+		if (mNextAnimation)
+		{
+			mNextAnimTime += deltaTime * mNextAnimPlayRate;
+			while (mNextAnimTime > mNextAnimation->GetDuration())
+			{
+				mNextAnimTime -= mNextAnimation->GetDuration();
+			}
+
+			if (mBlendTime > 0.0f)
+			{
+				mBlendTime -= deltaTime;
+			}
+			else
+			{
+				mBlendTime = 0.0f;
+
+				mAnimation = mNextAnimation;
+				mAnimTime = mNextAnimTime;
+				mAnimPlayRate = mNextAnimPlayRate;
+
+				mNextAnimation = nullptr;
+			}
+		}
 
 		// Recompute matrix palette
 		ComputeMatrixPalette();
@@ -71,23 +97,70 @@ void SkeletalMeshComponent::Update(float deltaTime)
 	}
 }
 
-float SkeletalMeshComponent::PlayAnimation(const Animation* anim, float playRate)
+float SkeletalMeshComponent::PlayAnimation(Animation* anim, float playRate, float blendTime)
 {
-	mAnimation = anim;
-	mAnimTime = 0.0f;
-	mAnimPlayRate = playRate;
+	if (!mAnimation)
+	{
+		mAnimation = anim;
+		mAnimTime = 0.0f;
+		mAnimPlayRate = playRate;
+		
+		mBlendTime = 0.0f;
 
-	if (!mAnimation) { return 0.0f; }
+		if (!mAnimation) { return 0.0f; }
 
-	ComputeMatrixPalette();
+		ComputeMatrixPalette();
 
-	return mAnimation->GetDuration();
+		return mAnimation->GetDuration();
+	}
+	else
+	{
+		mNextAnimation = anim;
+		mNextAnimTime = 0.0f;
+		mNextAnimPlayRate = playRate;
+
+		mBlendTime = mMaxBlendTime = blendTime;
+
+		if (!mNextAnimation) { return 0.0f; }
+
+		ComputeMatrixPalette();
+
+		return mNextAnimation->GetDuration();
+	}
 }
 
 void SkeletalMeshComponent::ComputeMatrixPalette()
 {
 	const std::vector<Matrix4>& globalInvBindPoses = mSkeleton->GetGlobalInvBindPoses();
-	mAnimation->GetGlobalPoseAtTime(mCurrentPoseVector, mSkeleton, mAnimTime);
+	
+	if (mBlendTime > 0.0f)
+	{
+		std::vector<Matrix4> firstAnim;
+		std::vector<Matrix4> secondAnim;
+
+		mAnimation->GetGlobalPoseAtTime(firstAnim, mSkeleton, mAnimTime);
+		mNextAnimation->GetGlobalPoseAtTime(secondAnim, mSkeleton, mNextAnimTime);
+
+		auto num = mAnimation->GetNumBones();
+		if (mCurrentPoseVector.size() < num)
+		{
+			mCurrentPoseVector.resize(num);
+		}
+
+		auto scale = mBlendTime / mMaxBlendTime;
+		for (int i = 0; i < num; ++i)
+		{
+			auto interp = BoneTransform::Interpolate(BoneTransform::ToBoneTransform(firstAnim[i]),
+				BoneTransform::ToBoneTransform(secondAnim[i]), scale);
+			auto mat = interp.ToMatrix();
+
+			mCurrentPoseVector[i] = mat;
+		}
+	}
+	else
+	{
+		mAnimation->GetGlobalPoseAtTime(mCurrentPoseVector, mSkeleton, mAnimTime);
+	}
 
 	// Setup the palette for each bone
 	for (size_t i = 0; i < mSkeleton->GetNumBones(); i++)

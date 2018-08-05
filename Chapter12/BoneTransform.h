@@ -17,6 +17,7 @@ public:
 	Vector3 mTranslation;
 
 	Matrix4 ToMatrix() const;
+	static BoneTransform ToBoneTransform(const Matrix4&);
 
 	static BoneTransform Interpolate(const BoneTransform& a, const BoneTransform& b, float f);
 };
