@@ -7,6 +7,9 @@
 // ----------------------------------------------------------------
 
 #pragma once
+
+#include <vector>
+#include <string>
 #include "MeshComponent.h"
 #include "MatrixPalette.h"
 
@@ -24,6 +27,8 @@ public:
 
 	// Play an animation. Returns the length of the animation
 	float PlayAnimation(const class Animation* anim, float playRate = 1.0f);
+
+	Vector3 GetBonePosition(std::string&);
 protected:
 	void ComputeMatrixPalette();
 
@@ -32,4 +37,6 @@ protected:
 	const class Animation* mAnimation;
 	float mAnimPlayRate;
 	float mAnimTime;
+
+	std::vector<Matrix4> mCurrentPoseVector;
 };

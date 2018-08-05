@@ -62,6 +62,12 @@ void SkeletalMeshComponent::Update(float deltaTime)
 
 		// Recompute matrix palette
 		ComputeMatrixPalette();
+
+		// for debugging
+		std::string boneName("pelvis");
+		auto pos = GetBonePosition(boneName);
+		SDL_Log("object space position of [ %s ] : ( %f %f %f )",
+			boneName.c_str(), pos.x, pos.y, pos.z);
 	}
 }
 
@@ -81,13 +87,31 @@ float SkeletalMeshComponent::PlayAnimation(const Animation* anim, float playRate
 void SkeletalMeshComponent::ComputeMatrixPalette()
 {
 	const std::vector<Matrix4>& globalInvBindPoses = mSkeleton->GetGlobalInvBindPoses();
-	std::vector<Matrix4> currentPoses;
-	mAnimation->GetGlobalPoseAtTime(currentPoses, mSkeleton, mAnimTime);
+	mAnimation->GetGlobalPoseAtTime(mCurrentPoseVector, mSkeleton, mAnimTime);
 
 	// Setup the palette for each bone
 	for (size_t i = 0; i < mSkeleton->GetNumBones(); i++)
 	{
 		// Global inverse bind pose matrix times current pose matrix
-		mPalette.mEntry[i] = globalInvBindPoses[i] * currentPoses[i];
+		mPalette.mEntry[i] = globalInvBindPoses[i] * mCurrentPoseVector[i];
 	}
+}
+
+Vector3 SkeletalMeshComponent::GetBonePosition(std::string& _n)
+{
+	Vector3 retVal(1.0f, 1.0f, 1.0f);
+
+	auto& bv = mSkeleton->GetBones();
+	for (int i = 0; i < bv.size(); ++i)
+	{
+		if (bv[i].mName == _n)
+		{
+			//retVal = mCurrentPoseVector[i].GetTranslation();
+			retVal = Vector3::Transform(Vector3::Zero, mCurrentPoseVector[i]);
+
+			break;
+		}
+	}
+
+	return retVal;
 }
