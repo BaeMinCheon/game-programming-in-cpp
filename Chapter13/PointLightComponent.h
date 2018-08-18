@@ -24,4 +24,6 @@ public:
 	// Radius of light
 	float mInnerRadius;
 	float mOuterRadius;
+	// Specular color
+	Vector3 mSpecularColor;
 };

@@ -42,6 +42,7 @@ void PointLightComponent::Draw(Shader* shader, Mesh* mesh)
 	shader->SetVectorUniform("uPointLight.mDiffuseColor", mDiffuseColor);
 	shader->SetFloatUniform("uPointLight.mInnerRadius", mInnerRadius);
 	shader->SetFloatUniform("uPointLight.mOuterRadius", mOuterRadius);
+	shader->SetVectorUniform("uPointLight.mSpecularColor", mSpecularColor);
 
 	// Draw the sphere
 	glDrawElements(GL_TRIANGLES, mesh->GetVertexArray()->GetNumIndices(), 

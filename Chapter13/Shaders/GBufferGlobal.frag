@@ -20,6 +20,7 @@ layout(location = 0) out vec4 outColor;
 uniform sampler2D uGDiffuse;
 uniform sampler2D uGNormal;
 uniform sampler2D uGWorldPos;
+uniform sampler2D uGSpecPower;
 
 // Create a struct for directional light
 struct DirectionalLight
@@ -45,6 +46,8 @@ void main()
 	vec3 gbufferDiffuse = texture(uGDiffuse, fragTexCoord).xyz;
 	vec3 gbufferNorm = texture(uGNormal, fragTexCoord).xyz;
 	vec3 gbufferWorldPos = texture(uGWorldPos, fragTexCoord).xyz;
+	float gbufferSpecPower = texture(uGSpecPower, fragTexCoord).x;
+
 	// Surface normal
 	vec3 N = normalize(gbufferNorm);
 	// Vector from surface to light
@@ -60,7 +63,8 @@ void main()
 	if (NdotL > 0)
 	{
 		vec3 Diffuse = uDirLight.mDiffuseColor * dot(N, L);
-		Phong += Diffuse;
+		vec3 Specular = uDirLight.mSpecColor * pow(max(0.0, dot(R, V)), gbufferSpecPower);
+		Phong += Diffuse + Specular;
 	}
 	// Clamp light between 0-1 RGB values
 	Phong = clamp(Phong, 0.0, 1.0);

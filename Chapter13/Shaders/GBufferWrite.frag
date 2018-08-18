@@ -20,6 +20,7 @@ in vec3 fragWorldPos;
 layout(location = 0) out vec3 outDiffuse;
 layout(location = 1) out vec3 outNormal;
 layout(location = 2) out vec3 outWorldPos;
+layout(location = 3) out vec3 outSpecPower;
 
 // This is used for the texture sampling
 uniform sampler2D uTexture;
@@ -31,4 +32,5 @@ void main()
 	// Normal/world pos are passed directly along
 	outNormal = fragNormal;
 	outWorldPos = fragWorldPos;
+	outSpecPower = vec3(100, 0, 0);
 }

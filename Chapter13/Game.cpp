@@ -338,6 +338,7 @@ void Game::LoadData()
 			p->mDiffuseColor = color;
 			p->mInnerRadius = 100.0f;
 			p->mOuterRadius = 200.0f;
+			p->mSpecularColor = color;
 		}
 	}
 
