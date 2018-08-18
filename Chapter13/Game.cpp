@@ -29,6 +29,7 @@
 #include "Skeleton.h"
 #include "Animation.h"
 #include "PointLightComponent.h"
+#include "SpotLightComponent.h"
 
 Game::Game()
 :mRenderer(nullptr)
@@ -340,6 +341,19 @@ void Game::LoadData()
 			p->mOuterRadius = 200.0f;
 			p->mSpecularColor = color;
 		}
+	}
+
+	// spot light
+	{
+		a = new Actor(this);
+		a->SetPosition(Vector3(1200.0f, 0.0f, 100.0f));
+		SpotLightComponent* s = new SpotLightComponent(a);
+		Vector3 color = Vector3(0.5f, 0.5f, 0.5f);
+		s->mDiffuseColor = color;
+		s->mInnerRadius = 500.0f;
+		s->mOuterRadius = 500.0f;
+		s->mSpecularColor = color;
+		s->mRotation = Quaternion(Vector3::UnitY, Math::Pi / 4.0f);
 	}
 
 	// Left/right walls

@@ -127,6 +127,9 @@
     <ClCompile Include="PointLightComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="SpotLightComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Actor.h">
@@ -246,6 +249,9 @@
     <ClInclude Include="PointLightComponent.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="SpotLightComponent.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\Sprite.frag">
@@ -279,6 +285,9 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="Shaders\Skinned.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\GBufferSpotLight.frag">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

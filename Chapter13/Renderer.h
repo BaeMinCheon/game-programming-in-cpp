@@ -44,6 +44,9 @@ public:
 	void AddPointLight(class PointLightComponent* light);
 	void RemovePointLight(class PointLightComponent* light);
 
+	void AddSpotLight(class SpotLightComponent*);
+	void RemoveSpotLight(class SpotLightComponent*);
+
 	class Texture* GetTexture(const std::string& fileName);
 	class Mesh* GetMesh(const std::string& fileName);
 
@@ -130,6 +133,9 @@ private:
 	// GBuffer shader
 	class Shader* mGGlobalShader;
 	class Shader* mGPointLightShader;
+	class Shader* mGSpotLightShader;
 	std::vector<class PointLightComponent*> mPointLights;
+	std::vector<class SpotLightComponent*> mSpotLights;
 	class Mesh* mPointLightMesh;
+	class Mesh* mSpotLightMesh;
 };

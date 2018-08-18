@@ -44,6 +44,7 @@
     <ClCompile Include="SkeletalMeshComponent.cpp" />
     <ClCompile Include="Skeleton.cpp" />
     <ClCompile Include="SoundEvent.cpp" />
+    <ClCompile Include="SpotLightComponent.cpp" />
     <ClCompile Include="SpriteComponent.cpp" />
     <ClCompile Include="TargetActor.cpp" />
     <ClCompile Include="TargetComponent.cpp" />
@@ -85,6 +86,7 @@
     <ClInclude Include="SkeletalMeshComponent.h" />
     <ClInclude Include="Skeleton.h" />
     <ClInclude Include="SoundEvent.h" />
+    <ClInclude Include="SpotLightComponent.h" />
     <ClInclude Include="SpriteComponent.h" />
     <ClInclude Include="TargetActor.h" />
     <ClInclude Include="TargetComponent.h" />
@@ -98,6 +100,7 @@
     <None Include="Shaders\GBufferGlobal.frag" />
     <None Include="Shaders\GBufferGlobal.vert" />
     <None Include="Shaders\GBufferPointLight.frag" />
+    <None Include="Shaders\GBufferSpotLight.frag" />
     <None Include="Shaders\GBufferWrite.frag" />
     <None Include="Shaders\Phong.frag" />
     <None Include="Shaders\Phong.vert" />
