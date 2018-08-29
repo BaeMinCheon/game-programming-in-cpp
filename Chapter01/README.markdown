@@ -1,4 +1,6 @@
 
+---
+
 # How to run this project ? `on Windows 10`
 
 ---
@@ -13,13 +15,9 @@
 2. `Tools` → `Get Tools and Features...`
 3. check whether proper work-load installed `Game development with C++`
 
----
-
 ### _B. PREPARE CODE_
 1. download code from https://github.com/gameprogcpp/code
 2. open solution in chapter folder with visual studio 2017
-
----
 
 ### _C. RUN PROJECT_
 1. build solution
