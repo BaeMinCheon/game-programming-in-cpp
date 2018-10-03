@@ -33,5 +33,5 @@ void main()
 	// Pass along the texture coordinate to frag shader
 	fragTexCoord = inTexCoord;
 	// vertex color assign
-	vertexColor = vec4(0.0, 0.0, 1.0, 0.0);
+	vertexColor = vec4(1.0, 0.0, 0.0, 0.0);
 }
